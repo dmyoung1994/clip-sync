@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "clip-sync"
+version = "0.1.0"
+description = "A lightweight, cross-platform clipboard sync tool using Microbin"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "pyperclip",
+    "requests",
+]
+
+[project.scripts]
+clip-sync = "clip_sync.main:main"
