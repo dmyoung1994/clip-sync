@@ -4,11 +4,14 @@ A lightweight, cross-platform daemon that automatically syncs your clipboard acr
 
 ## 🚀 One-Line Installation
 
-Once you have pushed this to a GitHub repository, you can install it on any machine with Python and `pip` using a single command:
-
-### **macOS / Linux / Windows (PowerShell/Bash)**
+### **macOS / Linux / WSL**
 ```bash
-pip install git+https://github.com/YOUR_USERNAME/clip-sync.git
+curl -sSL https://github.com/dmyoung1994/clip-sync/raw/master/install.sh | bash
+```
+
+### **Windows (PowerShell)**
+```powershell
+iwr -useb https://github.com/dmyoung1994/clip-sync/raw/master/install.ps1 | iex
 ```
 
 ---
