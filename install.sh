@@ -35,7 +35,22 @@ else
 fi
 echo -e "✅ Found ${PYTHON_CMD}"
 
-# 3. The Installation Strategy
+# 3. Check for Pip
+if ! $PYTHON_CMD -m pip --version &>/dev/null; then
+    echo -e "${RED}Error: pip is not installed for ${PYTHON_CMD}.${NC}"
+    echo "Please install pip: https://pip.pypa.io/en/stable/installation/"
+    exit 1
+fi
+echo -e "✅ Found pip"
+
+# 4. Check for Git
+if ! command -v git &>/dev/null; then
+    echo -e "${RED}Error: git is not installed. You need git to install from GitHub.${NC}"
+    exit 1
+fi
+echo -e "✅ Found git"
+
+# 5. Installation Strategy
 install_via_pipx() {
     echo -e "${BLUE}Attempting installation via pipx (Best for modern Linux/macOS)...${NC}"
     if command -v pipx &>/dev/null; then
@@ -71,16 +86,31 @@ install_via_pip() {
     $PYTHON_CMD -m pip install git+https://github.com/dmyoung1994/clip-sync.git
 }
 
-# 4. Execute Strategy
-# First, try standard pip
+# Execute Strategy
 if ! install_via_pip; then
     echo -e "${YELLOW}Standard pip failed (likely due to PEP 668/externally-managed-environment).${NC}"
-    # If pip failed, try the smart pipx path
     if ! install_via_pipx; then
         echo -e "${RED}❌ Installation failed. Please ensure Python and pip/pipx are available.${NC}"
         exit 1
     fi
 fi
 
+# 6. Optional: Startup Registration
+echo -e "\n${BLUE}Would you like to run clip-sync in the background automatically at startup? (y/n)${NC}"
+read -r answer
+if [[ "$answer" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    echo -e "${BLUE}Setting up startup registration...${NC}"
+    # Note: This part is tricky via a remote script, so we tell them how to do it manually
+    echo -e "${YELLOW}To finish setup, please follow the instructions below:${NC}"
+    if [[ "$OS_TYPE" == "macos" ]]; then
+        echo "1. Create a LaunchAgent: ~/Library/LaunchAgents/com.user.clip-sync.plist"
+    elif [[ "$OS_TYPE" == "windows" ]]; then
+        echo "1. Create a startup shortcut in: shell:startup"
+    else
+        echo "1. Add 'clip-sync --daemon --hub <URL>' to your ~/.bashrc or ~/.zshrc"
+    fi
+fi
+
 echo -e "\n${GREEN}✨ Success! clip-sync is installed.${NC}"
 echo -e "Usage: ${BLUE}clip-sync --hub http://your-ip:8081${NC}"
+echo -e "To run in background: ${BLUE}clip-sync --daemon --hub http://your-ip:8081${NC}"

@@ -33,7 +33,11 @@ pip install .
 After installation, start the sync daemon by pointing it to your Host's Microbin URL:
 
 ```bash
+# Standard mode (keeps terminal open)
 clip-sync --hub http://192.168.68.62:8081
+
+# Daemon mode (runs in background, terminal closes immediately)
+clip-sync --daemon --hub http://192.168.68.62:8081
 ```
 
 ### Options
@@ -41,6 +45,7 @@ clip-sync --hub http://192.168.68.62:8081
 | :--- | :--- | :--- |
 | `--hub` | **(Required)** The URL of your Microbin hub | N/A |
 | `--interval` | How often to check for changes (in seconds) | `1.0` |
+| `--daemon` | Run in the background (detached) | `False` |
 
 ## 🏗️ Requirements
 
