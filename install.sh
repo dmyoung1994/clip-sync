@@ -98,9 +98,8 @@ fi
 # 6. Optional: Startup Registration
 echo -e "\n${BLUE}Would you like to run clip-sync in the background automatically at startup? (y/n)${NC}"
 read -r answer
-if [[ "$answer" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+if [[ "$answer" =~ ^[yY](es)?$ ]]; then
     echo -e "${BLUE}Setting up startup registration...${NC}"
-    # Note: This part is tricky via a remote script, so we tell them how to do it manually
     echo -e "${YELLOW}To finish setup, please follow the instructions below:${NC}"
     if [[ "$OS_TYPE" == "macos" ]]; then
         echo "1. Create a LaunchAgent: ~/Library/LaunchAgents/com.user.clip-sync.plist"
