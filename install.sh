@@ -24,33 +24,44 @@ elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
 fi
 echo -e "Detected OS: ${BLUE}$OS_TYPE${NC}"
 
-# 2. Check for Python
-if command -v python3 &>/dev/null; then
+# 3. Check for uv (Preferred for Windows/Modern workflows)
+if command -v uv &>/dev/null; then
+    UV_CMD="uv"
+    echo -e "✅ Found ${UV_CMD}"
+elif command -v python3 &>/dev/null; then
     PYTHON_CMD="python3"
+    echo -e "✅ Found ${PYTHON_CMD}"
 elif command -v python &>/dev/null; then
     PYTHON_CMD="python"
+    echo -e "✅ Found ${PYTHON_CMD}"
 else
     echo -e "${RED}Error: Python is not installed. Please install Python 3.8+ first.${NC}"
     exit 1
 fi
-echo -e "✅ Found ${PYTHON_CMD}"
 
-# 3. Check for Pip
-if ! $PYTHON_CMD -m pip --version &>/dev/null; then
-    echo -e "${RED}Error: pip is not installed for ${PYTHON_CMD}.${NC}"
-    echo "Please install pip: https://pip.pypa.io/en/stable/installation/"
-    exit 1
+# 4. Check for Pip (Only if uv is not used)
+if [[ "$UV_CMD" != "uv" ]]; then
+    if ! $PYTHON_CMD -m pip --version &>/dev/null; then
+        echo -e "${RED}Error: pip is not installed for ${PYTHON_CMD}.${NC}"
+        echo "Please install pip: https://pip.pypa.io/en/stable/installation/"
+        exit 1
+    fi
+    echo -e "✅ Found pip"
 fi
-echo -e "✅ Found pip"
 
-# 4. Check for Git
+# 5. Check for Git
 if ! command -v git &>/dev/null; then
     echo -e "${RED}Error: git is not installed. You need git to install from GitHub.${NC}"
     exit 1
 fi
 echo -e "✅ Found git"
 
-# 5. Installation Strategy
+# 6. Installation Strategy
+install_via_uv() {
+    echo -e "${BLUE}Attempting installation via uv (Fastest/Cleanest)...${NC}"
+    uv pip install --system git+https://github.com/dmyoung1994/clip-sync.git
+}
+
 install_via_pipx() {
     echo -e "${BLUE}Attempting installation via pipx (Best for modern Linux/macOS)...${NC}"
     if command -v pipx &>/dev/null; then
@@ -87,7 +98,9 @@ install_via_pip() {
 }
 
 # Execute Strategy
-if ! install_via_pip; then
+if [[ "$UV_CMD" == "uv" ]]; then
+    install_via_uv
+elif ! install_via_pip; then
     echo -e "${YELLOW}Standard pip failed (likely due to PEP 668/externally-managed-environment).${NC}"
     if ! install_via_pipx; then
         echo -e "${RED}❌ Installation failed. Please ensure Python and pip/pipx are available.${NC}"
